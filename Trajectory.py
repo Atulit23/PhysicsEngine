@@ -1,4 +1,3 @@
-
 import pygame 
 import sys
 import math
@@ -19,12 +18,12 @@ running = True
 
 # Equation of Trajectory
 x_vals = np.linspace(0, 300, 200)
-theta = 60 
+theta = 30 
 
 theta_rad = np.radians(theta)
 
 g = 10
-v0 = 80
+v0 = 10
 
 def trajectory(x, theta, g, v0):
     return x * np.tan(theta) - (g * x**2) / (2 * v0**2 * np.cos(theta) ** 2)
