@@ -24,22 +24,46 @@ theta_rad = np.radians(theta)
 
 g = 10
 v0 = 10
+dt = 0.1
+air_resistance_coefficient = 4
+air_density = 8.225
+drag_coefficient = 0.99
+area_object = 10
+wind_speed = 10
 
 def trajectory(x, theta, g, v0):
     return x * np.tan(theta) - (g * x**2) / (2 * v0**2 * np.cos(theta) ** 2)
 
-y = trajectory(x_vals, theta_rad, g, v0)
 
-x_inter = np.interp(x_vals, (x_vals.min(), x_vals.max()), (0, width - 50))
-y_inter = np.interp(y, (y.min(), y.max()), (height - 50, 50))
-
-print(x_inter)
-print(y_inter)
+def calculate_air_resistance(vx,vy,drag_coefficient,air_density,area_object):
+    speed = np.sqrt(vx**2 + vy**2)
+    drag_force = 0.5 * drag_coefficient * air_density * area_object * speed**2
+    drag_x = drag_force * (vx / speed)
+    drag_y = drag_force * (vy / speed)
+    return drag_x,drag_y
 
 start = False
 
 clock = pygame.time.Clock()
 index = 0
+vx = v0 * np.cos(theta_rad)
+vy = v0 * np.sin(theta_rad)
+air_resistance = True
+
+if air_resistance:
+    drag_x, drag_y = calculate_air_resistance(vx,vy,drag_coefficient,air_density,area_object)
+else:
+    drag_x,drag_y = 0,0
+
+vx += wind_speed - drag_x * dt
+vy += g * dt - drag_y * dt
+
+v0 = np.sqrt(vx**2 + vy**2)
+
+y = trajectory(x_vals, theta_rad, g, v0)
+
+x_inter = np.interp(x_vals, (x_vals.min(), x_vals.max()), (0, width - 50))
+y_inter = np.interp(y, (y.min(), y.max()), (height - 50, 50))
 
 while running:
     clock.tick(60)
